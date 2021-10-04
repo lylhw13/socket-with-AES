@@ -1,4 +1,14 @@
-Tcp socket with AES encrypt.
+Example for tcp socket with AES encrypt.
+
+Use server and client chat as an example to explian useage.
+
+# Build
+```sh
+sudo apt install libssl-dev
+make
+```
+
+# Test
 
 ## generate a random file
 ```sh

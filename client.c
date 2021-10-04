@@ -11,7 +11,6 @@
 
 unsigned char *key  = (unsigned char *)"01234567890123456789012345678901";
 unsigned char *iv = (unsigned char *)"0123456789012345";
-int decryptedtext_len;
 
 ssize_t rio_readn(int fd, void *buf, size_t n)
 {
@@ -37,14 +36,15 @@ ssize_t rio_readn(int fd, void *buf, size_t n)
 
 int main(int argc, char *argv)
 {
-    int sockfd;
-    struct sockaddr_in sockaddr;
-    int port = 33333;
     char *addr = "127.0.0.1";
-    int n;
+    int port = 33333;
+    int sockfd, n;
+    struct sockaddr_in sockaddr;
     unsigned char buf[BUFSIZE];    
     unsigned char decryptedtext[BUFSIZE];
-    int nread, nwrite;
+    int decryptedtext_len, nread, nwrite;
+    unsigned long int errorcode;
+    int offset = 0;
 
     
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -59,26 +59,19 @@ int main(int argc, char *argv)
         perror("connect");
 
     ctx_init(key, iv);
-    int i = 0;
-    int offset = 0;
-    int tmp = 0;
-    unsigned long int errorcode;
     while ((nread = read(sockfd, buf + offset, BUFSIZE - offset)) > 0) {
-    // while ((nread = read(sockfd, buf, BUFSIZE)) > 0) {
 
-    // ctx_init(key, iv);
 
         ctx_reset(key, iv);
-        i++;
  
         // BIO_dump_fp(stdout, buf, nread);
-        if (nread < BUFSIZE)
-            fprintf(stderr, "i %d, nread %d ",i, nread);
+        // if (nread < BUFSIZE)
+        //     fprintf(stderr, "i %d, nread %d ",i, nread);
 
         // tmp = (nread + offset) % 16;
 
         // decryptedtext_len = decry(buf, nread, decryptedtext);
-        decryptedtext_len = decry(buf, nread + offset - tmp, decryptedtext);
+        decryptedtext_len = decry(buf, nread + offset, decryptedtext);
 
 
         if (decryptedtext_len < 0) {
@@ -87,7 +80,7 @@ int main(int argc, char *argv)
                 fprintf(stderr, "errrocode is %08lx\n", errorcode);
                 offset = nread;
                 continue;
-                fprintf(stderr,"\n");
+                // fprintf(stderr,"\n");
             }
             else {
                 ERR_print_errors_fp(stderr);
@@ -106,8 +99,8 @@ int main(int argc, char *argv)
         if ((nwrite = write(STDOUT_FILENO, decryptedtext, decryptedtext_len)) < 0)
             perror("write");
 
-        if (nread < BUFSIZE)
-            fprintf(stderr, ", nwrite %d\n", nwrite);
+        // if (nread < BUFSIZE)
+        //     fprintf(stderr, ", nwrite %d\n", nwrite);
         // // fprintf(stderr, "nread %d, nwrite %d, decry_len %d\n", nread, nwrite, decryptedtext_len);
         // BIO_dump_fp(stderr, buf, nread);
         // fprintf(stderr, "\n");
