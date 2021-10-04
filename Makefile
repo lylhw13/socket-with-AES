@@ -7,10 +7,10 @@ PROG = server.out client.out
 
 all: $(PROG)
 
-server.out: encrypt.o server.c
+server.out: encrypt.o generic.h server.c
 	$(CC) $(CFLAGS) -o server.out encrypt.o server.c $(LIBS)
 
-client.out: encrypt.o client.c
+client.out: encrypt.o generic.h client.c
 	$(CC) $(CFLAGS) -o client.out encrypt.o client.c $(LIBS)
 
 encrypt.o: encrypt.h encrypt.c
