@@ -1,3 +1,6 @@
+#ifndef GENERIC_H
+#define GENERIC_H
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -30,3 +33,5 @@ ssize_t rio_writen(int fd, void *buf, size_t n)
     }
     return n;
 }
+
+#endif
